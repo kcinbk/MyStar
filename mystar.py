@@ -91,7 +91,9 @@ def orgs_supplemental_info(ein_num_list, browser_cookies, request_headers):
 
     for i, ein_num in enumerate(tqdm(ein_num_list, desc="Fetching mission statement, social media accounts")):
         sleep(randint(1, 3))
-        response = requests.get(f'https://www.guidestar.org/profile/{ein_num}', cookies=cookies, headers=headers)
+        response = requests.get(f'https://www.guidestar.org/profile/{ein_num}',
+                                cookies=cookies,
+                                headers=headers)
         if response.status_code != 200:
             continue
         else:
@@ -100,8 +102,8 @@ def orgs_supplemental_info(ein_num_list, browser_cookies, request_headers):
             social_media_links = data.select('a.media-link')
             link_list = [link.get('href') for link in social_media_links]
         
-            # Regex patterns for social media platforms
-            twitter_pattern = r"^https?://(?:www\.)?twitter\.com/"
+            # social media sites re patterns
+            twitter_pattern = r"^https?://(?:www\.)?(twitter|x)\.com/[^/]+/?$"
             facebook_pattern = r"^https?://(?:www\.)?facebook\.com/"
             instagram_pattern = r"^https?://(?:www\.)?instagram\.com/"
             youtube_pattern = r"^https?://(?:www\.)?youtube\.com/"
@@ -126,7 +128,7 @@ def orgs_supplemental_info(ein_num_list, browser_cookies, request_headers):
                     instagram_link = platform_url
             
             social_media_rows.append((ein_num, mission_statement, facebook_link, twitter_link, youtube_link, instagram_link, linkedin_link))
-
+    print(f"Finish requesting information about these {len(result_list)} organizations!")
     df = pd.DataFrame(social_media_rows, columns=['ein_num', 'mission_statement', 'facebook_link', 'twitter_link', 
                                             'youtube_link', 'instagram_link', 'linkedin_link'])
     return df
